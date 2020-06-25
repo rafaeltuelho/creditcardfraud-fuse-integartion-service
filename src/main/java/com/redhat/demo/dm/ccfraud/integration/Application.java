@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 
 @SpringBootApplication
 @Configuration
-@ComponentScan(basePackages = "com.redhat.demo.dm.ccfraud.integration")
+@ComponentScan(basePackages = "com.redhat.demo.dm.ccfraud")
 public class Application {
 
     /**

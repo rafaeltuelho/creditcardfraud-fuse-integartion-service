@@ -50,6 +50,10 @@ public class CamelRouter extends RouteBuilder {
         "org.apache.kafka.common.serialization.ByteArraySerializer";
     private static final String KAFKA_DESERIALIZER_CLASS_CONFIG = 
         "org.apache.kafka.common.serialization.ByteArrayDeserializer";
+    private static final String KAFKA_STRING_SERIALIZER_CLASS_CONFIG = 
+        "org.apache.kafka.common.serialization.StringSerializer";
+    private static final String KAFKA_STRING_DESERIALIZER_CLASS_CONFIG = 
+        "org.apache.kafka.common.serialization.StringDeserializer";
     
     @Override
     public void configure() throws Exception {
@@ -77,12 +81,13 @@ public class CamelRouter extends RouteBuilder {
         // Direct routes
         from("direct:publishToKafka")
             .routeId("kafkaPublisher")
+            .log("raw object [ ${body} ] to kafka topic}")
             .marshal().json(JsonLibrary.Jackson, CreditCardTransaction.class)
             .log("publishing [ ${body} ] to kafka topic}")
             .setHeader(KafkaConstants.KEY, constant("cct")) // Key of the message
-            .toF("kafka:%s?brokers=%s:%s&serializerClass=%s", kafkaTopic, kafkaHost, kafkaPort, KAFKA_SERIALIZER_CLASS_CONFIG);
+            .toF("kafka:%s?brokers=%s:%s&serializerClass=%s", kafkaTopic, kafkaHost, kafkaPort, KAFKA_STRING_SERIALIZER_CLASS_CONFIG);
             
-        fromF("kafka:%s?brokers=%s:%s&valueDeserializer=%s", kafkaTopic, kafkaHost, kafkaPort, KAFKA_DESERIALIZER_CLASS_CONFIG)
+        fromF("kafka:%s?brokers=%s:%s&valueDeserializer=%s", kafkaTopic, kafkaHost, kafkaPort, KAFKA_STRING_DESERIALIZER_CLASS_CONFIG)
             .routeId("kafkaSubscriber")
             .unmarshal().json(JsonLibrary.Jackson, CreditCardTransaction.class)
             .log("Message received from Kafka : ${body}")
@@ -97,11 +102,7 @@ public class CamelRouter extends RouteBuilder {
             .routeId("makeDecision")
             // .process(e -> {
             //     LOG.debug("Decision request Body: " + e.getIn().getBody());
-            //     CreditCardTransaction ccTransaction = e.getIn().getBody(CreditCardTransaction.class);
-
-            //     Map<String, Object> decisionFacts = new HashMap<>();
-            //     //decisionFacts.put(Integer.toString(trigger.getTriggerId()), ccTransaction);
-            //     e.getIn().setBody(decisionFacts);
+            //     e.getIn().setBody("some");
             // }) // call decision service
             .to("bean:creditCardTransactionHelper?method=processTransaction(${body})")
             .log("Decision Results: [ ${body} ]");
