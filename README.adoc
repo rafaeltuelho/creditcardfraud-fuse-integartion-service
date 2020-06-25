@@ -1,0 +1,109 @@
+= Credit Card Fraud Detection Integration Service
+
+This service implements the integration routing of the Credit Card Fraud Detection Demo. 
+It is responsible for routing events from a Kafka Stream Topic to the Red Hat Process Automation Service.
+
+== Initial setup
+
+Before running this service you need to spin up a Kafka cluster and a Process Server (RHPAM).
+After configuring these two components you can specify the connection properties in the link:src/main/resources/application.properties[application.properties] config file.
+
+> the process project can be imported into Business Central from https://github.com/rafaeltuelho/[this repository]
+
+You can use the following endpoint to generate some test msgs into Kafka Topic:
+
+`POST` `http://localhost:8181/camel/trigger`
+
+```json
+{
+  "triggerId": "1",
+  "memberId": "0987654321"
+}
+```
+
+== Stream load
+
+You can use https://jmeter.apache.org/[Apache JMeter] with https://github.com/GSLabDev/pepper-box[Pepper Box plugin] to load about 10m triggers using this JMeter Test plan link:JMteter_kafka_topic_load_plan.jmx[jmeter/JMteter_kafka_topic_load_plan.jmx]
+
+> before running the test plan make sure your local kafka cluster is up&running.
+> expects zookeper listening on `localhost:2181` and broker on `localhost:9092`
+
+> the Pepper Box plugin JAR file is avaiable inside the `jmeter/` dir. Before start JMeter copy this JAR into the `JMETER_HOME/lib/ext`
+
+== API exposed
+
+Access the OpenAPI spec with http://localhost:8181/webjars/swagger-ui/index.html?url=/camel/api-doc[Swagger-UI]
+                
+== Deployment options
+
+You can run this service in the following modes:
+
+* Single-node OpenShift cluster
+* Standalone on your machine
+
+The most effective way to use this booster is to deploy and run the project on OpenShift.
+
+IMPORTANT: This project requires Java 8 JDK or later and Maven 3.3.x or later.
+
+=== Running the booster on a single-node OpenShift cluster without preinstalled images
+To deploy your booster to a running single-node OpenShift cluster without preinstalled images:
+
+. Download the project and extract the archive on your local filesystem.
+
+. Log in to your OpenShift cluster:
++
+[source,bash,options="nowrap",subs="attributes+"]
+----
+$ oc login -u developer -p developer
+----
+
+. Create a new OpenShift project for the booster:
++
+[source,bash,options="nowrap",subs="attributes+"]
+----
+$ oc new-project MY_PROJECT_NAME
+----
+
+. Import base images in your newly created project (MY_PROJECT_NAME):
++
+[source,bash,options="nowrap",subs="attributes+"]
+----
+$ oc import-image {image-name-version} --from={image-registry}{image-prefix}{image-name-version} --confirm
+----
+
+. Build and deploy the project to the OpenShift cluster:
++
+[source,bash,options="nowrap",subs="attributes+"]
+----
+$ mvn clean -DskipTests fabric8:deploy -Popenshift -Dfabric8.generator.fromMode=istag -Dfabric8.generator.from=MY_PROJECT_NAME/{image-name-version}
+----
+
+. In your browser, navigate to the `MY_PROJECT_NAME` project in the OpenShift console.
+Wait until you can see that the pod for the `PHM-integration-service` application has started up.
+
+. On the project's `Overview` page, locate the URL for the `PHM-integration-service` application. The URL uses this form:
+`http://PHM-integration-service-MY_PROJECT_NAME.OPENSHIFT_IP_ADDR.nip.io`.
+
+. Click the URL to access the greetings service application and then follow the instructions on that page.
+
+== Running the booster standalone on your machine
+
+To run this booster as a standalone project on your local machine:
+
+. Download the project and extract the archive on your local filesystem.
+
+. Build the project:
++
+[source,bash,options="nowrap",subs="attributes+"]
+----
+$ cd PROJECT_DIR
+$ mvn clean package
+----
+. Run the services:
++
+[source,bash,options="nowrap",subs="attributes+"]
+----
+$ mvn spring-boot:run
+----
+. Go to link:http://localhost:8181[] and then follow the instructions on that page.
+. To view the Fuse Console got to link://localhost:10001/
