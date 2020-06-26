@@ -87,8 +87,7 @@ public class CreditCardTransactionHelper {
         insert(kieSession, "Transactions", ccTransaction);
 
         // And fire the rules.
-        LOGGER.info("Firing the rules with {} Facts in the Session [ {} ] WM", 
-            kieSession.getFactCount(), kieSession.getIdentifier());
+        LOGGER.info("Firing the rules on Session [ {} ] WM", kieSession.getIdentifier());
         int fired = kieSession.fireAllRules();
         LOGGER.info("{} rules got fired!", fired);
 
@@ -134,9 +133,10 @@ public class CreditCardTransactionHelper {
 			throw new IllegalStateException(errorMessage);
         }
         
-		SessionPseudoClock pseudoClock = (SessionPseudoClock) clock;
-        LOGGER.info( "\tCEP Engine PseudoClock current time: " + 
-            LocalDateTime.ofInstant(Instant.ofEpochMilli(pseudoClock.getCurrentTime()), ZoneId.systemDefault()).toString() );
+        SessionPseudoClock pseudoClock = (SessionPseudoClock) clock;
+        String dateTimeFormatted = LocalDateTime.ofInstant(
+			Instant.ofEpochMilli(pseudoClock.getCurrentTime()), ZoneId.systemDefault()).format(DATE_TIME_FORMAT);        
+        LOGGER.info( "\tCEP Engine PseudoClock current time: " + dateTimeFormatted);
 		EntryPoint ep = kieSession.getEntryPoint(stream);
 
 		// First insert the event
@@ -145,7 +145,7 @@ public class CreditCardTransactionHelper {
 		LOGGER.info(" ");
         LOGGER.info("Inserting credit card [" + cct.getCreditCardNumber() + "] transaction [" + 
             cct.getTransactionNumber() + "] context into session.");
-		String dateTimeFormatted = LocalDateTime.ofInstant(
+		dateTimeFormatted = LocalDateTime.ofInstant(
 			Instant.ofEpochMilli(cct.getTimestamp()), ZoneId.systemDefault()).format(DATE_TIME_FORMAT);
 		LOGGER.info( "\tCC Transaction Time: " + dateTimeFormatted);
         long advanceTime = cct.getTimestamp() - pseudoClock.getCurrentTime();

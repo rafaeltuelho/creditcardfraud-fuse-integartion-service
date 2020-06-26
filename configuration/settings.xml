@@ -281,6 +281,15 @@
                 <url>${env.NEXUS_REPO}/repository/maven-releases/</url>
                 <!-- url>http://nexus:8081/repository/maven-releases/</url -->
                 <!-- url>http://nexus-unsecure-cat-demo.apps.cluster-catcep-c228.catcep-c228.example.opentlc.com/repository/maven-releases/</url -->
+                <layout>default</layout>
+                <releases>
+                  <enabled>true</enabled>
+                  <updatePolicy>always</updatePolicy>
+                </releases>
+                <snapshots>
+                  <enabled>true</enabled>
+                  <updatePolicy>always</updatePolicy>
+                </snapshots>                
             </repository>
             <repository>
                 <id>maven-snapshots</id>
@@ -288,6 +297,15 @@
                 <url>${env.NEXUS_REPO}/repository/maven-snapshots/</url>
                 <!--url>http://nexus:8081/repository/maven-snapshots/</url -->
                 <!-- url>http://nexus-unsecure-cat-demo.apps.cluster-catcep-c228.catcep-c228.example.opentlc.com/repository/maven-snapshots/</url -->
+                <layout>default</layout>
+                <releases>
+                  <enabled>true</enabled>
+                  <updatePolicy>always</updatePolicy>
+                </releases>
+                <snapshots>
+                  <enabled>true</enabled>
+                  <updatePolicy>always</updatePolicy>
+                </snapshots>                
             </repository>
         </repositories>
     </profile>
