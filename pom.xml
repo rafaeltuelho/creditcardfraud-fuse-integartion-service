@@ -12,12 +12,16 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <fuse.bom.version>7.5.0.fuse-750029-redhat-00002</fuse.bom.version>
     <drools.version>7.33.0.Final-redhat-00003</drools.version>
-    <!-- version of Arquillian -->
+    <!-- drools.version>7.36.0.Final</drools.version -->
+    
+    <!-- version of Arquillian
     <arquillian.cube.version>1.17.1</arquillian.cube.version>
     <arquillian.version>1.4.0.Final</arquillian.version>
-  </properties>
+    -->
+  </properties>  
   <dependencyManagement>
     <dependencies>
+      <!--
       <dependency>
         <groupId>org.jboss.redhat-fuse</groupId>
         <artifactId>fuse-springboot-bom</artifactId>
@@ -25,13 +29,14 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
-      <dependency>
+      -->
+      <!-- dependency>
         <groupId>org.arquillian.cube</groupId>
         <artifactId>arquillian-cube-bom</artifactId>
         <version>${arquillian.cube.version}</version>
         <scope>import</scope>
         <type>pom</type>
-      </dependency>
+      </dependency -->
     </dependencies>
   </dependencyManagement>
   <dependencies>
@@ -45,14 +50,17 @@
           <artifactId>spring-boot-starter-tomcat</artifactId>
         </exclusion>
       </exclusions>
+      <version>1.5.19.RELEASE</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-undertow</artifactId>
+      <version>1.5.19.RELEASE</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-actuator</artifactId>
+      <version>1.5.19.RELEASE</version>
     </dependency>
     <dependency>
       <groupId>org.webjars</groupId>
@@ -68,34 +76,42 @@
     <dependency>
       <groupId>org.apache.camel</groupId>
       <artifactId>camel-spring-boot-starter</artifactId>
+      <version>2.21.0.fuse-750033-redhat-00001</version>
     </dependency>
     <dependency>
       <groupId>org.apache.camel</groupId>
       <artifactId>camel-http-starter</artifactId>
+      <version>2.21.0.fuse-750033-redhat-00001</version>
     </dependency>
     <dependency>
       <groupId>org.apache.camel</groupId>
       <artifactId>camel-servlet-starter</artifactId>
+      <version>2.21.0.fuse-750033-redhat-00001</version>
     </dependency>
     <dependency>
       <groupId>org.apache.camel</groupId>
       <artifactId>camel-jackson-starter</artifactId>
+      <version>2.21.0.fuse-750033-redhat-00001</version>
     </dependency>
     <dependency>
       <groupId>org.apache.camel</groupId>
       <artifactId>camel-swagger-java-starter</artifactId>
+      <version>2.21.0.fuse-750033-redhat-00001</version>
     </dependency>
     <dependency>
       <groupId>org.apache.camel</groupId>
       <artifactId>camel-kafka-starter</artifactId>
+      <version>2.21.0.fuse-750033-redhat-00001</version>
     </dependency>      
     <dependency>
       <groupId>io.fabric8</groupId>
       <artifactId>openshift-client</artifactId>
+      <version>3.1.12.fuse-750023-redhat-00001</version>
     </dependency>
     <dependency>
       <groupId>io.hawt</groupId>
       <artifactId>hawtio-springboot-1</artifactId>
+      <version>2.0.0.fuse-750020-redhat-00001</version>
     </dependency>
 
     <!-- Data Model -->
@@ -104,7 +120,7 @@
 			<artifactId>creditcardfraud-data-model</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
-		<!-- -->
+		<!--
 		<dependency>
 			<groupId>com.redhat.demo.dm</groupId>
 			<artifactId>creditcardfraud-rules</artifactId>
@@ -116,7 +132,7 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-    <!-- -->
+    -->
     
     <!-- For remote execution on KIE Server -->
     <dependency>
@@ -136,6 +152,11 @@
 			<version>${drools.version}</version>
 		</dependency>	
 		<dependency>
+			<groupId>org.kie</groupId>
+			<artifactId>kie-spring</artifactId>
+			<version>${drools.version}</version>
+		</dependency>	
+		<dependency>
 			<groupId>org.drools</groupId>
 			<artifactId>drools-core</artifactId>
 			<version>${drools.version}</version>
@@ -144,18 +165,22 @@
 			<groupId>org.drools</groupId>
 			<artifactId>drools-compiler</artifactId>
 			<version>${drools.version}</version>
-		</dependency>
+    </dependency>
+    
     <!-- Test -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
+      <version>1.5.19.RELEASE</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.camel</groupId>
       <artifactId>camel-test</artifactId>
+      <version>2.21.0.fuse-750033-redhat-00001</version>
       <scope>test</scope>
     </dependency>
+    <!-- 
     <dependency>
       <groupId>org.arquillian.cube</groupId>
       <artifactId>arquillian-cube-requirement</artifactId>
@@ -178,6 +203,7 @@
       <version>${arquillian.version}</version>
       <scope>test</scope>
     </dependency>
+  -->
   </dependencies>
   <build>
     <plugins>
@@ -232,6 +258,21 @@
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
+    </repository>
+    <repository>
+      <id>maven-releases</id>
+      <name>maven-releases</name>
+      <!-- url>http://nexus-unsecure-cat-demo.apps.cluster-catcep-c228.catcep-c228.example.opentlc.com/repository/maven-releases/</url -->
+      <url>http://localhost:8081/repository/maven-releases/</url>
+      <layout>default</layout>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>always</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>always</updatePolicy>
+      </snapshots>            
     </repository>
   </repositories>
   <pluginRepositories>

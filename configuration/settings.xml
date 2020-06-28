@@ -274,6 +274,9 @@
     </profile>
     <profile>
         <id>openshift</id>
+        <activation>
+          <activeByDefault>true</activeByDefault>
+        </activation>        
         <repositories>
             <repository>
                 <id>maven-releases</id>

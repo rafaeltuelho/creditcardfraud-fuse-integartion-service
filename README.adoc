@@ -103,7 +103,7 @@ $ mvn clean package
 +
 [source,bash,options="nowrap",subs="attributes+"]
 ----
-$ mvn spring-boot:run
+$ mvn spring-boot:run --spring.profiles.active=dev
 ----
 . Go to link:http://localhost:8181[] and then follow the instructions on that page.
 . To view the Fuse Console got to link://localhost:10001/

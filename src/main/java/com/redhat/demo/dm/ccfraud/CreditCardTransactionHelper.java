@@ -1,34 +1,24 @@
 package com.redhat.demo.dm.ccfraud;
 
-import java.math.BigDecimal;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import com.redhat.demo.dm.ccfraud.domain.CountryCode;
 import com.redhat.demo.dm.ccfraud.domain.CreditCardTransaction;
 import com.redhat.demo.dm.ccfraud.domain.PotentialFraudFact;
-import com.redhat.demo.dm.ccfraud.domain.PotentialFraudFactCaseFile;
-import com.redhat.demo.dm.ccfraud.domain.Terminal;
 import com.redhat.demo.dm.ccfraud.integration.kie.BusinessAutomationClient;
 
-import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.common.serialization.StringDeserializer;
 import org.kie.api.KieServices;
 import org.kie.api.builder.KieScanner;
 import org.kie.api.builder.ReleaseId;
+import org.kie.api.cdi.KReleaseId;
+import org.kie.api.cdi.KSession;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.EntryPoint;
@@ -48,7 +38,10 @@ public class CreditCardTransactionHelper {
     private static final DateTimeFormatter DATE_TIME_FORMAT = 
         DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss:SSS", Locale.US);
 
-    private KieContainer kContainer;
+    // private KieContainer kContainer;
+    // @KReleaseId( groupId = "jar1", artifactId = "art1", version = "1.0")
+    @KSession("cdfd-session")
+    private KieSession kieSession;
 
     @Value("${kie.process.container.id}") 
     String processContainerId;
@@ -73,7 +66,7 @@ public class CreditCardTransactionHelper {
         LOGGER.info("Found '" + ccTransactions.size() + 
             "' transactions for creditcard: '" + ccTransaction.getCreditCardNumber() + "'.");
 
-        KieSession kieSession = createKieSession("cdfd-session");
+        //KieSession kieSession = createKieSession("cdfd-session");
 
         // Insert transaction history/context.
         LOGGER.info("Inserting previous (recent) credit card transactions into session.");
@@ -101,28 +94,6 @@ public class CreditCardTransactionHelper {
 
         // Dispose the session to free up the resources.
         kieSession.dispose();
-    }
-
-    private KieContainer createKieContainer(){
-        KieServices kieServices = KieServices.Factory.get();
-        if (kContainer == null){
-            LOGGER.info("Creating a new KieContainer from the Classpah...");
-            kContainer = kieServices.getKieClasspathContainer();
-        }
-
-        return kContainer;
-    }
-
-    private KieSession createKieSession(String sessionName) {
-        kContainer = createKieContainer();
-        KieSession kSession = kContainer.newKieSession(sessionName);
-
-        if (kSession == null){
-            LOGGER.error("Unknown Session with name '"+sessionName+"'");
-        }
-
-        LOGGER.info("Got Session [ {} ]", kSession.getIdentifier());
-        return kSession;
     }
 
 	private static FactHandle insert(KieSession kieSession, String stream, CreditCardTransaction cct) {

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:kie="http://drools.org/schema/kie-spring"
+       xsi:schemaLocation="
+       http://drools.org/schema/kie-spring http://drools.org/schema/kie-spring.xsd
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+  <!-- bean id="kiePostProcessor" class="org.kie.spring.KModuleBeanFactoryPostProcessor"/ -->
+  <bean id="kiePostProcessor" class="org.kie.spring.annotations.KModuleAnnotationPostProcessor"/>
+  
+  <kie:import releaseId-ref="named-session" enableScanner="true" scannerInterval="10000"/>
+  <kie:releaseId id="named-session" 
+    groupId="com.redhat.demo.dm" 
+    artifactId="creditcardfraud-rules" 
+    version="LATEST"/>
+
+</beans>
