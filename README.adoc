@@ -107,3 +107,25 @@ $ mvn spring-boot:run --spring.profiles.active=dev
 ----
 . Go to link:http://localhost:8181[] and then follow the instructions on that page.
 . To view the Fuse Console got to link://localhost:10001/
+
+---
+
+ ```
+ JAVA_OPTIONS=-Dkie.maven.settings.custom=/home/jboss/.m2/settings.xml -Dlogging.level.root=DEBUG`
+ oc create configmap custom-mvn-settings --from-file=./configuration/settings.xml
+ oc set volume dc/cat-fuse-integration-service --add --name=mvn-settings --type=configmap --configmap-name=custom-mvn-settings --mount-path=/home/jboss/.m2/
+ ```
+---
+> First, we can set our logging level within our VM Options:
+
+```
+-Dlogging.level.org.springframework=TRACE 
+-Dlogging.level.com.baeldung=TRACE
+```
+
+> Alternatively, if we're using Maven, we can define our log settings via the command line:
+
+```
+mvn spring-boot:run 
+  -Dspring-boot.run.arguments=--logging.level.org.springframework=TRACE,--logging.level.com.baeldung=TRACE
+```
