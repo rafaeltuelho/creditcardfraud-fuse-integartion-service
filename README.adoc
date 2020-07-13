@@ -129,3 +129,33 @@ $ mvn spring-boot:run --spring.profiles.active=dev
 mvn spring-boot:run 
   -Dspring-boot.run.arguments=--logging.level.org.springframework=TRACE,--logging.level.com.baeldung=TRACE
 ```
+
+to create a build source cone secret
+```
+oc create secret generic cat-gitlab-secret --from-literal=password=<token> --type=kubernetes.io/basic-auth
+oc set build-secret --source bc/cat-dm-integration cat-gitlab-secret
+```
+
+to create a confimap for the custom maven settings.xml:
+
+```
+oc create configmap custom-mvn-settings --from-file=./configuration/settings.xml
+oc set volume dc/cat-dm-integration --add --name=mvn-settings --type=configmap --configmap-name=custom-mvn-settings --mount-path=/config-data
+```
+
+Env vars to point kie-scanner to the remote maven repo manager:
+
+```
+NEXUS_REPO=<your nexus repo manager host>/
+JAVA_OPTIONS=-Dkie.maven.settings.custom=/config-data/settings.xml
+```
+
+make sure your `configuration/settigs.xml` has this line:
+
+```xml
+  <!-- ### configured local repository ### -->
+  <localRepository>/deployments/M2/repository</localRepository>
+...
+```
+
+Otherwise `kie-scanner` will fail!

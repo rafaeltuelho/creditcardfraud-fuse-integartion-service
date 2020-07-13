@@ -1,6 +1,11 @@
 spec:
   template:
     spec:
+      volumes:
+        - name: mvn-settings
+          configMap:
+            name: custom-mvn-settings
+            defaultMode: 420    
       containers:
         -
           resources:
@@ -10,6 +15,36 @@ spec:
            limits:
              cpu: "1.0"
              memory: 256Mi
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 10001
+              scheme: HTTP
+            initialDelaySeconds: 10
+            timeoutSeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 10001
+              scheme: HTTP
+            initialDelaySeconds: 180
+            timeoutSeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3                         
           env:
-          - name: SPRING_APPLICATION_JSON
-            value: '{"server":{"undertow":{"io-threads":1, "worker-threads":2 }}}'
+            - name: SPRING_APPLICATION_JSON
+              value: '{"server":{"undertow":{"io-threads":1, "worker-threads":2 }}}'
+            - name: NEXUS_REPO
+              value: >-
+                http://nexus:8081
+            - name: JAVA_OPTIONS
+              value: '-Dkie.maven.settings.custom=/config-data/settings.xml'
+            - name: M2_HOME
+              value: /opt/rh/rh-maven35/root/usr/share/maven            
+          volumeMounts:
+            - name: mvn-settings
+              mountPath: /config-data
